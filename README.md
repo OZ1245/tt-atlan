@@ -1,4 +1,6 @@
-# atlan
+# Atlan Advance Credit Solutions
+
+Тестовое задание для Atlan Advance Management на должность Frontend developer на Vue.js
 
 ## Project setup
 ```
