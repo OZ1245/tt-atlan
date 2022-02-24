@@ -1,28 +1,29 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <b-container class="bv-example-row">
+      <b-row>
+        <b-col>
+          <Info />
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col>
+          <Tabs />
+        </b-col>
+      </b-row>
+    </b-container>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Info from '@/components/Info'
+import Tabs from '@/components/Tabs'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Tabs,
+    Info
   }
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
