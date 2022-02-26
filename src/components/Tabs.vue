@@ -3,7 +3,7 @@
     <b-tabs card>
       <b-tab title="Main" active>
         <b-card-text>
-          <MainTable />
+          <MainTable :nested="content.nested" />
         </b-card-text>
       </b-tab>
       <b-tab title="Table">
@@ -18,6 +18,14 @@
 
   export default {
     name: 'tabs',
-    components: { MainTable }
+    components: { MainTable },
+    props: {
+      content: {
+        type: Object,
+        default() {
+          return {}
+        }
+      }
+    }
   }
 </script>

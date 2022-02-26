@@ -26,19 +26,19 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
-
   export default {
     name: 'info',
-    computed: {
-      ...mapGetters({
-        id: 'getId',
-        status: 'getStatus',
-      })
-    },
-    mounted() {
-      this.$store.dispatch('fetchId')
-      this.$store.dispatch('fetchStatus')
+    props: {
+      id: {
+        type: Number,
+        default: 0
+      },
+      status: {
+        type: String,
+        default() {
+          return 'Pending'
+        }
+      }
     },
     methods: {
       saveDoc() {
