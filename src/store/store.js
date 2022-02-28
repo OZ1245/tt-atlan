@@ -21,8 +21,12 @@ const store = new Vuex.Store({
     setDoc (state, data) {
       state.doc = data
     },
-    updateNasted (state, data) {
+    deleteNested (state, data) {
       state.doc.nested = state.doc.nested.filter((item) => item.id !== data.id)
+      state.newDoc.nested.push(data)
+    },
+    addNested (state, data) {
+      state.doc.nested.push(data)
       state.newDoc.nested.push(data)
     },
     updateAlertData (state, message) {
@@ -41,9 +45,14 @@ const store = new Vuex.Store({
       const json = await response.json()
       commit('setDoc', json)
     },
-    deleteNested ({ commit }, id) {
+    deleteNested ({ commit, state }, key) {
+      const id = state.doc.nested[key].id
       const data = {id: id, deleted: true}
-      commit('updateNasted', data)
+      commit('deleteNested', data)
+    },
+    addNested ({ commit }) {
+      const data = {title: null, price: null}
+      commit('addNested', data)
     },
     showAlert ({ commit }, data) {
       commit('updateAlertData', data)

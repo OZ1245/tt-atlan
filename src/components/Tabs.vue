@@ -3,22 +3,26 @@
     <b-tabs card>
       <b-tab title="Main" active>
         <b-card-text>
-          <MainTable :nested="content.nested" />
+          <MainTab :nested="content.nested" />
         </b-card-text>
       </b-tab>
       <b-tab title="Table">
-        <b-card-text>Tab contents TABLE</b-card-text>
+        <TableTab :table="content.table" />
       </b-tab>
     </b-tabs>
   </b-card>
 </template>
 
 <script>
-  import MainTable from '@/components/MainTab'
+  import MainTab from '@/components/MainTab'
+  import TableTab from '@/components/TableTab'
 
   export default {
     name: 'tabs',
-    components: { MainTable },
+    components: {
+      MainTab,
+      TableTab
+    },
     props: {
       content: {
         type: Object,
@@ -26,6 +30,10 @@
           return {}
         }
       }
-    }
+    },
+    // beforeUpdate() {
+    //   console.log('Tabs component - beforeUpdate method')
+    //   console.log(this.content.nested)
+    // }
   }
 </script>

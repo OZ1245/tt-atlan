@@ -58,6 +58,10 @@ export default {
     await this.fetchDoc()
     this.isLoaded = true
   },
+  // beforeUpdate() {
+  //   console.log('App component - beforeUpdate method')
+  //   console.log(this.doc)
+  // }
 }
 </script>
 
