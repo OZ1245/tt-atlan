@@ -30,10 +30,6 @@
           return {}
         }
       }
-    },
-    // beforeUpdate() {
-    //   console.log('Tabs component - beforeUpdate method')
-    //   console.log(this.content.nested)
-    // }
+    }
   }
 </script>

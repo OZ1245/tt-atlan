@@ -153,7 +153,7 @@
         this.showAlert(`The "${title}" has deleted`)
       },
       updatePrice() {
-        console.log('updatePrice method')
+        // console.log('updatePrice method')
         let price = 0.0
 
         this.nested.map((item) => {
@@ -163,7 +163,8 @@
         this.$set(this, 'totalPrice', price)
       },
       validateState(i, name) {
-        console.log(`validateState method: key = ${i}, name = ${name}`)
+        // console.log(`validateState method`)
+        // console.log(`validateState method: key = ${i}, name = ${name}`)
 
         const { $invalid } = this.$v.nested.$each[i][name]
         return $invalid ? !$invalid : null;
