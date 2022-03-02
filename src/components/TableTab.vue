@@ -3,6 +3,7 @@
     <b-col>
       <b-row>
         <b-col>
+          <!-- TODO - Неверная дата -->
           <p><strong>End:</strong> {{ end | moment('add', '1 months') | moment('YYYY-MM-DD') }}</p>
         </b-col>
       </b-row>

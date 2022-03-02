@@ -7,7 +7,9 @@
         </b-card-text>
       </b-tab>
       <b-tab title="Table">
-        <TableTab :table="content.table" />
+        <b-card-text>
+          <TableTab :table="content.table" />
+        </b-card-text>
       </b-tab>
     </b-tabs>
   </b-card>
