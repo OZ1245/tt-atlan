@@ -3,8 +3,7 @@
     <b-col>
       <b-row>
         <b-col>
-          <!-- TODO - Неверная дата -->
-          <p><strong>End:</strong> {{ end | moment('add', '1 months') | moment('YYYY-MM-DD') }}</p>
+          <p><strong>End:</strong> {{ end | moment('add', '1 months') | moment('YYYY-MM-DD HH:MM') }}</p>
         </b-col>
       </b-row>
 
@@ -12,10 +11,13 @@
         <b-col>
           <b-table striped hover :fields="fields" :items="items" sort-by.sync="period">
             <template #cell(period)="data">
-              {{ data.value.period }}
-              <b-form-checkbox
-                v-model="data.value.check"
-              />
+              <div class="d-flex">
+                {{ data.value.period }}
+                <b-form-checkbox
+                  v-model="data.value.check"
+                  @change="changeCheck(data.value.id, $event)"
+                />
+              </div>
             </template>
 
             <template #cell(qwe)="data">
@@ -37,6 +39,8 @@
 </template>
 
 <script>
+  import { mapActions } from 'vuex'
+
   export default {
     name: 'table-tab',
     data() {
@@ -74,25 +78,30 @@
     },
     computed: {
       end() {
-        // TODO - НЕверная дата
-        // const item = this.table.filter((item) => {
         const maxPeriod = Math.max.apply(Math, this.table.map((item) => {
           return item.period;
         }))
-        const item = this.table.filter((item) => {
-          return item.period === maxPeriod
-        })
-        return item[0].start
+        const item = this.table.find((item) => item.period === maxPeriod)
+        return item.start
       },
       items() {
         return this.table.map((item) => {
           return {
-            period: { period: item.period, check: item.check },
+            period: { id: item.id, period: item.period, check: item.check },
             qwe: item.qwe,
             rty: item.rty,
             start: item.start,
           }
         })
+      }
+    },
+    methods: {
+      ...mapActions([
+        'updateTableItem'
+      ]),
+      changeCheck(id, value) {
+        console.log(`changeCheck method: id = ${id}, value = ${value}`)
+        this.updateTableItem({ id: id, check: value })
       }
     }
   }

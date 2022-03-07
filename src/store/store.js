@@ -29,6 +29,18 @@ const store = new Vuex.Store({
       state.doc.nested.push(data)
       state.newDoc.nested.push(data)
     },
+    updateTableItem (state, data) {
+      let itemIndex = null
+      const item = state.newDoc.table.find((item, i) => {
+        itemIndex = i
+        return item.id === data.id
+      })
+      if (typeof item === 'undefined') {
+        state.newDoc.table.push(data)
+      } else {
+        state.newDoc.table[itemIndex] = Object.assign(item, data)
+      }
+    },
     updateAlertData (state, message) {
       if (message) {
         state.alert.show = 5
@@ -53,6 +65,10 @@ const store = new Vuex.Store({
     addNested ({ commit }) {
       const data = {title: null, price: null}
       commit('addNested', data)
+    },
+    updateTableItem({ commit }, { id, check }) {
+      const data = { id: id, check: check }
+      commit('updateTableItem', data)
     },
     showAlert ({ commit }, data) {
       commit('updateAlertData', data)
