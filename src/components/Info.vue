@@ -26,8 +26,15 @@
 </template>
 
 <script>
+  import { mapActions, mapGetters } from 'vuex'
+
   export default {
     name: 'info',
+    metaInfo() {
+      return {
+        title: `Document ${this.id} - ${this.status}`
+      }
+    },
     props: {
       id: {
         type: Number,
@@ -40,15 +47,24 @@
         }
       }
     },
+    computed: {
+      ...mapGetters([
+        'getDocumentStatus'
+      ])
+    },
     methods: {
+      ...mapActions([
+        'saveDocChanges'
+      ]),
       saveDoc() {
         // TODO
         console.log('saveDoc method')
+        this.saveDocChanges()
       },
       deleteDoc(){
         // TODO
         console.log('deleteDoc method')
-      }
+      },
     }
   }
 </script>

@@ -1,12 +1,13 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import axios from 'axios'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
     doc: {},
-    newDoc: {
+    docChanges: {
       nested: [],
       table: []
     },
@@ -15,30 +16,37 @@ const store = new Vuex.Store({
       dismissSecs: 5,
       dismissCountDown: 0,
       message: ''
+    },
+    documentStatus: {
+      id: 0,
+      name: 'Done'
     }
   },
   mutations: {
     setDoc (state, data) {
       state.doc = data
     },
+    setDocumentStatus (state, data) {
+      state.documentStatus = data
+    },
     deleteNested (state, data) {
       state.doc.nested = state.doc.nested.filter((item) => item.id !== data.id)
-      state.newDoc.nested.push(data)
+      state.docChanges.nested.push(data)
     },
     addNested (state, data) {
       state.doc.nested.push(data)
-      state.newDoc.nested.push(data)
+      state.docChanges.nested.push(data)
     },
     updateTableItem (state, data) {
       let itemIndex = null
-      const item = state.newDoc.table.find((item, i) => {
+      const item = state.docChanges.table.find((item, i) => {
         itemIndex = i
         return item.id === data.id
       })
       if (typeof item === 'undefined') {
-        state.newDoc.table.push(data)
+        state.docChanges.table.push(data)
       } else {
-        state.newDoc.table[itemIndex] = Object.assign(item, data)
+        state.docChanges.table[itemIndex] = Object.assign(item, data)
       }
     },
     updateAlertData (state, message) {
@@ -56,6 +64,17 @@ const store = new Vuex.Store({
       const response = await fetch('./data/doc.json')
       const json = await response.json()
       commit('setDoc', json)
+    },
+    saveDocChanges ({ commit, state }) {
+      axios.patch(`/doc/${this.id}`, state.docChanges)
+        .then((response) => {
+          console.warn(response)
+          commit('setDocumentStatus', { id: 1, name: 'Sending' })
+        })
+        .catch((error) => {
+          console.error(error.toJSON())
+        })
+      commit('setDocumentStatus', {id: 0, name: 'Done'})
     },
     deleteNested ({ commit, state }, key) {
       const id = state.doc.nested[key].id
@@ -78,12 +97,9 @@ const store = new Vuex.Store({
     }
   },
   getters: {
-    getDoc: state => {
-      return state.doc
-    },
-    getAlert: state => {
-      return state.alert
-    }
+    getDoc: state => state.doc,
+    getAlert: state => state.alert,
+    getDocumentStatus: state => state.documentStatus
   }
 })
 
