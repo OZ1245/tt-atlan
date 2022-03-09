@@ -52,39 +52,22 @@
                   />
                 </b-form-group>
               </b-col>
-              <b-col cols="12" md="6" v-if="item.foo">
-                <b-form-group
-                  label="Foo:"
-                >
-                  <b-form-input
-                    v-model="item.foo"
-                    type="text"
-                    @blur="changeInput(item.key, item.id, 'foo', $event)"
-                  />
-                </b-form-group>
-              </b-col>
-              <b-col cols="12" md="6" v-if="item.bar">
-                <b-form-group
-                  label="Bar:"
-                >
-                  <b-form-input
-                    v-model="item.bar"
-                    type="text"
-                    @blur="changeInput(item.key, item.id, 'bar', $event)"
-                  />
-                </b-form-group>
-              </b-col>
-              <b-col cols="12" md="6" v-if="item.baz">
-                <b-form-group
-                  label="Baz:"
-                >
-                  <b-form-input
-                    v-model="item.baz"
-                    type="text"
-                    @blur="changeInput(item.key, item.id, 'baz', $event)"
-                  />
-                </b-form-group>
-              </b-col>
+
+              <template v-for="(field, keyName) in item">
+                <b-col cols="12" md="6" v-if="keyName !== 'id' && keyName !== 'key' && keyName !== 'title' && keyName !== 'price'" :key="keyName">
+                    <b-form-group
+                      :label="`${keyName}:`"
+                      label-class="text-capitalize"
+                    >
+                      <b-form-input
+                        v-model="item[keyName]"
+                        type="text"
+                        @blur="changeInput(item.key, item.id, keyName, $event)"
+                      />
+                    </b-form-group>
+                </b-col>
+              </template>
+
             </b-row>
           </b-card>
         </b-col>
@@ -195,7 +178,7 @@
         return $invalid ? !$invalid : null;
       },
       changeInput(key, id, name) {
-        // console.log(`changeInput method: key = ${key}, id = ${id}, name = ${name}`)
+        console.log(`changeInput method: key = ${key}, id = ${id}, name = ${name}`)
 
         let value
         if (typeof id !== 'undefined') {

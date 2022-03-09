@@ -31,6 +31,7 @@
         cancel-title="No"
         :ok-disabled="documentIsLocked"
         :cancel-disabled="documentIsLocked"
+        hide-header-close
         @ok="confirmModal"
         @close="closeModal"
       >
