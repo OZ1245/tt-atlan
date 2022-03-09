@@ -17,7 +17,8 @@ const store = new Vuex.Store({
       dismissCountDown: 0,
       message: ''
     },
-    documentIsLocked: true
+    documentIsLocked: true,
+    deleteModalIsOpen: false
   },
   mutations: {
     setDoc (state, data) {
@@ -27,8 +28,8 @@ const store = new Vuex.Store({
       state.documentStatus = data
     },
     deleteNested (state, data) {
-      console.log('deleteNested mutation: data =')
-      console.log(data)
+      // console.log('deleteNested mutation: data =')
+      // console.log(data)
 
       state.doc.nested = state.doc.nested.filter((item) => {
         if (typeof data.id !== 'undefined') {
@@ -57,15 +58,15 @@ const store = new Vuex.Store({
       }
     },
     addNested (state, data) {
-      console.log('addNested mutation: data = ')
-      console.log(data)
+      // console.log('addNested mutation: data = ')
+      // console.log(data)
 
       state.doc.nested.push(data)
       state.docChanges.nested.push(data)
     },
     updateNested (state, data) {
-      console.log(`updateNested mutation: data = `)
-      console.log(data)
+      // console.log(`updateNested mutation: data = `)
+      // console.log(data)
 
       let index
       const item = state.docChanges.nested.find((item, i) => {
@@ -113,6 +114,12 @@ const store = new Vuex.Store({
     },
     unlockDocument (state) {
       state.documentIsLocked = false
+    },
+    openModal (state) {
+      state.deleteModalIsOpen = true
+    },
+    closeModal (state) {
+      state.deleteModalIsOpen = false
     }
   },
   actions: {
@@ -122,15 +129,19 @@ const store = new Vuex.Store({
       commit('setDoc', json)
     },
     saveDocChanges ({ commit, state }) {
-      axios.patch(`/doc/${this.id}`, state.docChanges)
+      commit('lockDocument')
+      axios.patch(`/doc/${state.doc.id}`, state.docChanges)
         .then((response) => {
           console.warn(response)
-          commit('lockDocument')
         })
         .catch((error) => {
           console.error(error.toJSON())
         })
-      commit('unlockDocument')
+
+      // Эмуляция задержки
+      setTimeout(() => {
+        commit('unlockDocument')
+      }, 1000)
     },
     deleteNested ({ commit }, data) {
       commit('deleteNested', data)
@@ -158,12 +169,35 @@ const store = new Vuex.Store({
     },
     unlockDocument({ commit }) {
       commit('unlockDocument')
+    },
+    openModal({ commit }) {
+      commit('openModal')
+    },
+    closeModal({ commit }) {
+      commit('closeModal')
+    },
+    deleteDocument({ commit, state }) {
+      commit('lockDocument')
+      axios.delete(`/doc/${state.doc.id}`)
+        .then((response) => {
+          console.warn(response)
+        })
+        .catch((error) => {
+          console.error(error.toJSON())
+        })
+
+      // Эмуляция задержки
+      setTimeout(() => {
+        commit('unlockDocument')
+        commit('closeModal')
+      }, 3000)
     }
   },
   getters: {
     getDoc: state => state.doc,
     getAlert: state => state.alert,
-    documentIsLocked: state => state.documentIsLocked
+    documentIsLocked: state => state.documentIsLocked,
+    deleteModalIsOpen: state => state.deleteModalIsOpen
   }
 })
 

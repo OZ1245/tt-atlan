@@ -100,7 +100,7 @@
         'updateTableItem'
       ]),
       changeCheck(id, value) {
-        console.log(`changeCheck method: id = ${id}, value = ${value}`)
+        // console.log(`changeCheck method: id = ${id}, value = ${value}`)
         this.updateTableItem({ id: id, check: value })
       }
     }

@@ -152,7 +152,7 @@
         unlockDocument: 'unlockDocument',
       }),
       deleteNested(key, id) {
-        console.log(`deleteNested method: id = ${id}, key = ${key}`)
+        // console.log(`deleteNested method: id = ${id}, key = ${key}`)
 
         const title = (key) ? 'New Nested' : this.nested.find((item) => item.id === id).title
 
@@ -195,7 +195,7 @@
         return $invalid ? !$invalid : null;
       },
       changeInput(key, id, name) {
-        console.log(`changeInput method: key = ${key}, id = ${id}, name = ${name}`)
+        // console.log(`changeInput method: key = ${key}, id = ${id}, name = ${name}`)
 
         let value
         if (typeof id !== 'undefined') {
@@ -204,8 +204,6 @@
         if (typeof key !== 'undefined') {
           value = this.nested.find((item) => item.key === key)[name]
         }
-
-        // console.log(`value = ${value}`)
 
         this.$v.$touch()
         let data

@@ -23,6 +23,19 @@
         <b-icon icon="trash" aria-hidden="true"></b-icon>
         Delete
       </b-button>
+
+      <b-modal
+        title="Confirm action"
+        :visible="deleteModalIsOpen"
+        ok-title="Yes"
+        cancel-title="No"
+        :ok-disabled="documentIsLocked"
+        :cancel-disabled="documentIsLocked"
+        @ok="confirmModal"
+        @close="closeModal"
+      >
+        <p>Delete document #100?</p>
+      </b-modal>
     </b-col>
   </b-row>
 </template>
@@ -51,22 +64,29 @@
     },
     computed: {
       ...mapGetters([
-        'documentIsLocked'
+        'documentIsLocked',
+        'deleteModalIsOpen'
       ])
     },
     methods: {
       ...mapActions([
-        'saveDocChanges'
+        'saveDocChanges',
+        'openModal',
+        'closeModal',
+        'deleteDocument'
       ]),
       saveDoc() {
-        // TODO
-        console.log('saveDoc method')
+        // console.log('saveDoc method')
         this.saveDocChanges()
       },
       deleteDoc(){
-        // TODO
-        console.log('deleteDoc method')
+        // console.log('deleteDoc method')
+        this.openModal()
       },
+      confirmModal(e) {
+        e.preventDefault()
+        this.deleteDocument()
+      }
     },
   }
 </script>
