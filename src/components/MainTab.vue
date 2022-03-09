@@ -58,10 +58,13 @@
                     <b-form-group
                       :label="`${keyName}:`"
                       label-class="text-capitalize"
+                      invalid-feedback="Must contain only a number"
+                      :state="validateState(i, 'other')"
                     >
                       <b-form-input
                         v-model="item[keyName]"
                         type="text"
+                        :state="validateState(i, 'other')"
                         @blur="changeInput(item.key, item.id, keyName, $event)"
                       />
                     </b-form-group>
@@ -91,7 +94,7 @@
 <script>
   import { mapActions } from 'vuex'
   import { validationMixin } from "vuelidate";
-  import { required, minLength, minValue, decimal } from "vuelidate/lib/validators";
+  import { required, minLength, minValue, decimal, integer } from "vuelidate/lib/validators";
 
   export default {
     name: 'main-tab',
@@ -121,6 +124,9 @@
             required,
             minValue: minValue(0.0),
             decimal
+          },
+          other: {
+            integer
           }
         }
       }
@@ -189,6 +195,7 @@
         }
 
         this.$v.$touch()
+
         let data
         if (typeof id === 'undefined') {
           data = { key: key, [name]: value }
@@ -202,23 +209,11 @@
       this.updatePrice()
     },
     updated() {
-      // console.log('updated method')
-      // Тоже нет уточняющих каких-то параметров
       this.updatePrice()
     },
     watch: {
-    //   // К сожалению, возвращает весь массив nested вместо текущей модели,
-    //   // а во втором параметре обработчика вместо старых значений - новые
-    //   nested: {
-    //     deep: true,
-    //     handler(nested, old) {
-    //       console.log(nested, old)
-    //     }
-    //   }
       isValid: {
         handler(value) {
-          // console.log(`isValid watch method: value = ${value}`)
-
           if (value) {
             this.unlockDocument()
           } else {
