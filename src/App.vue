@@ -51,12 +51,14 @@ export default {
   methods: {
     ...mapActions([
       'fetchDoc',
-      'hideAlert'
+      'hideAlert',
+      'unlockDocument'
     ])
   },
   async created() {
     await this.fetchDoc()
     this.isLoaded = true
+    this.unlockDocument()
   },
   // beforeUpdate() {
   //   console.log('App component - beforeUpdate method')

@@ -17,36 +17,86 @@ const store = new Vuex.Store({
       dismissCountDown: 0,
       message: ''
     },
-    documentStatus: {
-      id: 0,
-      name: 'Done'
-    }
+    documentIsLocked: true
   },
   mutations: {
     setDoc (state, data) {
       state.doc = data
     },
-    setDocumentStatus (state, data) {
+    blockDocument(state, data) {
       state.documentStatus = data
     },
     deleteNested (state, data) {
-      state.doc.nested = state.doc.nested.filter((item) => item.id !== data.id)
-      state.docChanges.nested.push(data)
+      console.log('deleteNested mutation: data =')
+      console.log(data)
+
+      state.doc.nested = state.doc.nested.filter((item) => {
+        if (typeof data.id !== 'undefined') {
+          return item.id !== data.id
+        } else {
+          return item.key !== data.key
+        }
+      })
+
+      if (typeof data.id !== 'undefined') {
+        let index
+        const item = state.docChanges.nested.find((item, i) => {
+          index = i
+          return item.id === data.id
+        })
+
+        if (typeof item === 'undefined') {
+          state.docChanges.nested.push(data)
+        } else {
+          state.docChanges.nested[index] = Object.assign(item, data)
+        }
+      }
+
+      if (typeof data.key !== 'undefined') {
+        state.docChanges.nested = state.docChanges.nested.filter((item) => item.key !== data.key)
+      }
     },
     addNested (state, data) {
+      console.log('addNested mutation: data = ')
+      console.log(data)
+
       state.doc.nested.push(data)
       state.docChanges.nested.push(data)
     },
+    updateNested (state, data) {
+      console.log(`updateNested mutation: data = `)
+      console.log(data)
+
+      let index
+      const item = state.docChanges.nested.find((item, i) => {
+        index = i
+        if (typeof data.id !== 'undefined') {
+          return item.id === data.id
+        }
+        if (typeof data.key !== 'undefined') {
+          return item.key === data.key
+        }
+
+      })
+
+      if (typeof item === 'undefined') {
+        state.docChanges.nested.push(data)
+      } else {
+        state.docChanges.nested[index] = Object.assign(item, data)
+      }
+    },
     updateTableItem (state, data) {
-      let itemIndex = null
+      let itemIndex
+
       const item = state.docChanges.table.find((item, i) => {
         itemIndex = i
         return item.id === data.id
       })
+
       if (typeof item === 'undefined') {
         state.docChanges.table.push(data)
       } else {
-        state.docChanges.table[itemIndex] = Object.assign(item, data)
+        state.docChanges.table[itemIndex] = Object.assign(item[0], data)
       }
     },
     updateAlertData (state, message) {
@@ -57,6 +107,12 @@ const store = new Vuex.Store({
         state.alert.show = false
         state.alert.message = ''
       }
+    },
+    lockDocument (state) {
+      state.documentIsLocked = true
+    },
+    unlockDocument (state) {
+      state.documentIsLocked = false
     }
   },
   actions: {
@@ -69,21 +125,23 @@ const store = new Vuex.Store({
       axios.patch(`/doc/${this.id}`, state.docChanges)
         .then((response) => {
           console.warn(response)
-          commit('setDocumentStatus', { id: 1, name: 'Sending' })
+          commit('lockDocument')
         })
         .catch((error) => {
           console.error(error.toJSON())
         })
-      commit('setDocumentStatus', {id: 0, name: 'Done'})
+      commit('unlockDocument')
     },
-    deleteNested ({ commit, state }, key) {
-      const id = state.doc.nested[key].id
-      const data = {id: id, deleted: true}
+    deleteNested ({ commit }, data) {
       commit('deleteNested', data)
     },
-    addNested ({ commit }) {
-      const data = {title: null, price: null}
+    addNested ({ commit }, key) {
+      const data = { key: key, title: null, price: 0 }
       commit('addNested', data)
+      commit('lockDocument')
+    },
+    updateNested ({ commit }, data) {
+      commit('updateNested', data)
     },
     updateTableItem({ commit }, { id, check }) {
       const data = { id: id, check: check }
@@ -94,12 +152,18 @@ const store = new Vuex.Store({
     },
     hideAlert({ commit }) {
       commit('updateAlertData')
+    },
+    lockDocument({ commit }) {
+      commit('lockDocument')
+    },
+    unlockDocument({ commit }) {
+      commit('unlockDocument')
     }
   },
   getters: {
     getDoc: state => state.doc,
     getAlert: state => state.alert,
-    getDocumentStatus: state => state.documentStatus
+    documentIsLocked: state => state.documentIsLocked
   }
 })
 

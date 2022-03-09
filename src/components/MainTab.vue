@@ -7,7 +7,7 @@
         </b-col>
       </b-row>
 
-      <b-row v-for="(item, i) in nested" :key="i" class="pb-3">
+      <b-row v-for="(item, i) in nested" :key="i" class="pb-3" :data-key="i">
         <b-col :class="`j-nested-col-${item.id}`">
           <b-card class="j-nested-card">
             <b-row align-v="end">
@@ -16,7 +16,7 @@
                   type="button"
                   class="close"
                   aria-label="Close"
-                  @click="deleteNested(i)"
+                  @click="deleteNested(item.key, item.id)"
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -33,8 +33,8 @@
                   <b-form-input
                     v-model="item.title"
                     type="text"
-                    @blur="checkInput(i, 'title')"
                     :state="validateState(i, 'title')"
+                    @change="changeInput(item.key, item.id, 'title', $event)"
                   />
                 </b-form-group>
               </b-col>
@@ -47,8 +47,8 @@
                   <b-form-input
                     v-model="item.price"
                     type="text"
-                    @blur="checkInput(i, 'price')"
                     :state="validateState(i, 'price')"
+                    @blur="changeInput(item.key, item.id, 'price', $event)"
                   />
                 </b-form-group>
               </b-col>
@@ -59,6 +59,7 @@
                   <b-form-input
                     v-model="item.foo"
                     type="text"
+                    @blur="changeInput(item.key, item.id, 'foo', $event)"
                   />
                 </b-form-group>
               </b-col>
@@ -69,6 +70,7 @@
                   <b-form-input
                     v-model="item.bar"
                     type="text"
+                    @blur="changeInput(item.key, item.id, 'bar', $event)"
                   />
                 </b-form-group>
               </b-col>
@@ -79,6 +81,7 @@
                   <b-form-input
                     v-model="item.baz"
                     type="text"
+                    @blur="changeInput(item.key, item.id, 'baz', $event)"
                   />
                 </b-form-group>
               </b-col>
@@ -120,7 +123,8 @@
     },
     data() {
       return {
-        totalPrice: 0.0
+        totalPrice: 0.0,
+        isValid: true
       }
     },
     validations: {
@@ -142,15 +146,34 @@
       ...mapActions({
         deleteNestedAction: 'deleteNested',
         showAlert: 'showAlert',
-        addNested: 'addNested'
+        addNestedAction: 'addNested',
+        updateNested: 'updateNested',
+        lockDocument: 'lockDocument',
+        unlockDocument: 'unlockDocument',
       }),
-      deleteNested(key) {
-        console.log(`deleteNested method: key = ${key}`)
+      deleteNested(key, id) {
+        console.log(`deleteNested method: id = ${id}, key = ${key}`)
 
-        const title = this.nested[key].title
+        const title = (key) ? 'New Nested' : this.nested.find((item) => item.id === id).title
 
-        this.deleteNestedAction(key)
+        let data
+        if (typeof id !== 'undefined') {
+          data = { id: id, deleted: true }
+        } else {
+          data = { key: key }
+        }
+
+        this.deleteNestedAction(data)
         this.showAlert(`The "${title}" has deleted`)
+      },
+      addNested() {
+        let key = Math.max.apply(Math, this.nested.map((item) => {
+          return item.key + 1;
+        }))
+        if (!key) {
+          key = this.nested.length
+        }
+        this.addNestedAction(key)
       },
       updatePrice() {
         // console.log('updatePrice method')
@@ -167,20 +190,62 @@
         // console.log(`validateState method: key = ${i}, name = ${name}`)
 
         const { $invalid } = this.$v.nested.$each[i][name]
+        this.$set(this, 'isValid', !this.$v.nested.$invalid)
+
         return $invalid ? !$invalid : null;
       },
-      checkInput(i, name) {
-        console.log('checkInputs method')
+      changeInput(key, id, name) {
+        console.log(`changeInput method: key = ${key}, id = ${id}, name = ${name}`)
+
+        let value
+        if (typeof id !== 'undefined') {
+          value = this.nested.find((item) => item.id === id)[name]
+        }
+        if (typeof key !== 'undefined') {
+          value = this.nested.find((item) => item.key === key)[name]
+        }
+
+        // console.log(`value = ${value}`)
+
         this.$v.$touch()
-        this.validateState(i, name)
+        let data
+        if (typeof id === 'undefined') {
+          data = { key: key, [name]: value }
+        } else {
+          data = { id: id, [name]: value }
+        }
+        this.updateNested(data)
       },
     },
     mounted() {
       this.updatePrice()
     },
-    beforeUpdate() {
+    updated() {
+      // console.log('updated method')
+      // Тоже нет уточняющих каких-то параметров
       this.updatePrice()
     },
+    watch: {
+    //   // К сожалению, возвращает весь массив nested вместо текущей модели,
+    //   // а во втором параметре обработчика вместо старых значений - новые
+    //   nested: {
+    //     deep: true,
+    //     handler(nested, old) {
+    //       console.log(nested, old)
+    //     }
+    //   }
+      isValid: {
+        handler(value) {
+          // console.log(`isValid watch method: value = ${value}`)
+
+          if (value) {
+            this.unlockDocument()
+          } else {
+            this.lockDocument()
+          }
+        }
+      }
+    }
   }
 </script>
 

@@ -7,16 +7,18 @@
     <b-col class="d-flex justify-content-end">
       <b-button
         variant="success"
-        @click="saveDoc"
         class="mx-1"
+        :disabled="documentIsLocked"
+        @click="saveDoc"
       >
         <b-icon icon="check2" aria-hidden="true"></b-icon>
         Save
       </b-button>
       <b-button
         variant="danger"
-        @click="deleteDoc"
         class="mx-1"
+        :disabled="documentIsLocked"
+        @click="deleteDoc"
       >
         <b-icon icon="trash" aria-hidden="true"></b-icon>
         Delete
@@ -49,7 +51,7 @@
     },
     computed: {
       ...mapGetters([
-        'getDocumentStatus'
+        'documentIsLocked'
       ])
     },
     methods: {
@@ -65,6 +67,6 @@
         // TODO
         console.log('deleteDoc method')
       },
-    }
+    },
   }
 </script>
